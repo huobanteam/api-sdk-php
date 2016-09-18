@@ -14,7 +14,7 @@ class HuobanApplication {
     public static function get_ticket($app_id) {
 
         $params = array(
-            'app_id' => $appId,
+            'app_id' => $app_id,
             'application_id' => HUOBAN_APPLICATION_ID,
             'application_secret' => HUOBAN_APPLICATION_SECRET,
             'expired' => 86400,
