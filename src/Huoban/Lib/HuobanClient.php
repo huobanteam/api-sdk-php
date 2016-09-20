@@ -65,7 +65,7 @@ class HuobanClient {
     public static function request($method, $url, $attributes = array(), $options = array()) {
 
         if (!self::$ch) {
-            throw new Exception('Huoban Client has not been setup with client id and client secret.');
+            throw new HuobanException('Huoban Client has not been setup with client id and client secret.');
         }
 
         curl_setopt(self::$ch, CURLOPT_POSTFIELDS, null);
