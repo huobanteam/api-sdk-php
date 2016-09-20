@@ -9,6 +9,26 @@ Huoban api sdk for PHP是伙伴云表格为第三方开发者提供的php sdk包
 - PHP 5.3+
 - cURL extension
 
+## 安装方法
+
+1. 如果您通过composer管理您的项目依赖，可以在你的项目根目录运行：
+
+        $ composer require huoban/api-sdk-php
+
+   或者在你的`composer.json`中声明对Huoban api SDK for PHP的依赖：
+
+        "require": {
+            "huoban/api-sdk-php": "~1.0"
+        }
+
+   然后通过`composer install`安装依赖。composer安装完成后，在您的PHP代码中引入依赖即可：
+
+        require_once __DIR__ . '/vendor/autoload.php';
+
+2. 下载SDK源码，在您的代码中引入SDK目录下的`autoload.php`文件：
+
+        require_once '/path/to/api-sdk-php/autoload.php';
+
 ## 快速使用
 
 ### 常用类
