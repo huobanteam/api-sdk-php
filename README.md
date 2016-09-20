@@ -32,15 +32,27 @@ $app_id = "<您从安装应用中获得的app_id>";
 ```
 获得不同的信息可以采用不同方法进行初始化
 ```
-HuobanClient::setup_with_app_id($app_id, $application_id, $application_secret);
+try {
+    HuobanClient::setup_with_app_id($app_id, $application_id, $application_secret);
+} catch (HuobanException $e) {
+    print $e->getMessage();
+}
 ```
 或
 ```
-HuobanClient::setup_with_token($app_id, $token);
+try {
+    HuobanClient::setup_with_token($app_id, $token);
+} catch (HuobanException $e) {
+    print $e->getMessage();
+}
 ```
 或
 ```
-HuobanClient::setup_with_ticket($ticket);
+try {
+    HuobanClient::setup_with_ticket($ticket);
+} catch (HuobanException $e) {
+    print $e->getMessage();
+}
 ```
 
 ### 返回结果处理
