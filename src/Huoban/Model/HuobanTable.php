@@ -2,12 +2,11 @@
 /**
  * HuobanTable
  *
- *     作者: 韩洋 (hanyang@huoban.com)
- * 创建时间: 2016-08-31 10:30:08
- * 修改记录:
- *
  * $Id$
  */
+namespace Huoban\Model;
+
+use Huoban\Lib\HuobanClient;
 
 class HuobanTable {
 
@@ -18,8 +17,8 @@ class HuobanTable {
      * @param  array  $options
      * @return array
      */
-    public static function get($table_id, $options = array()) {
-        return Huoban::get("/table/{$table_id}", $options);
+    public static function get($table_id, $attributes = array(), $options = array()) {
+        return HuobanClient::get("/table/{$table_id}", $attributes, $options);
     }
 
     /**

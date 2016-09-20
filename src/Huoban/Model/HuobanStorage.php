@@ -2,12 +2,11 @@
 /**
  * HuobanStorage
  *
- *     作者: 韩洋 (hanyang@huoban.com)
- * 创建时间: 2016-08-31 10:30:08
- * 修改记录:
- *
  * $Id$
  */
+namespace Huoban\Model;
+
+use Huoban\Lib\HuobanClient;
 
 class HuobanStorage {
 
@@ -20,7 +19,7 @@ class HuobanStorage {
         $attributes = array(
             'key' => $key,
         );
-        return Huoban::get("/storage", $attributes, $options);
+        return HuobanClient::get("/storage", $attributes, $options);
     }
 
     /**
@@ -33,6 +32,6 @@ class HuobanStorage {
             'key' => $key,
             'value' => $value,
         );
-        return Huoban::post("/storage", $attributes, $options);
+        return HuobanClient::post("/storage", $attributes, $options);
     }
 }

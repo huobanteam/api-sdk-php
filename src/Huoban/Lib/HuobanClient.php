@@ -2,39 +2,64 @@
 /**
  * Huoban
  *
- *     作者: 韩洋 (hanyang@huoban.com)
- * 创建时间: 2016-08-31 10:30:08
- * 修改记录:
- *
  * $Id$
  */
+namespace Huoban\Lib;
 
-class Huoban {
+use Huoban\Lib\HuobanException;
+use Huoban\Model\HuobanApplication;
+
+class HuobanClient {
 
     const HTTP_METHOD_GET = 'GET';
     const HTTP_METHOD_POST = 'POST';
     const HTTP_METHOD_PUT = 'PUT';
     const HTTP_METHOD_DELETE = 'DELETE';
 
-    static $ticket, $url, $ch, $headers;
+    static $ticket, $url, $ch, $headers, $token;
 
-    public static function setup($ticket, $is_test = true) {
+    public static function setup_with_app_id($app_id, $application_id = '', $application_secret = '', $is_test = false) {
+
+        self::create_curl($is_test);
+
+        $result = HuobanApplication::get_ticket($app_id, $application_id , $application_secret);
+
+        self::$ticket = $result['ticket'];
+    }
+
+    public static function setup_with_ticket($ticket, $is_test = false) {
 
         self::$ticket = $ticket;
 
-        self::$url = $is_test ? 'http://api.dev.huoban.com' : 'https://api.huoban.com';
+        self::create_curl($is_test);
+    }
 
-        self::$headers = array(
-            'Accept' => 'application/json',
-            'Cookie' => 'hb_dev_host=dev',
-        );
+    public static function setup_with_token($app_id, $token, $is_test = false) {
 
-        self::$ch = curl_init();
-        curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt(self::$ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt(self::$ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt(self::$ch, CURLOPT_HEADER, true);
-        curl_setopt(self::$ch, CURLINFO_HEADER_OUT, true);
+        self::create_curl($is_test);
+        if ($token) {
+            self::$token = $token;
+        }
+        $result = HuobanApplication::get_ticket($app_id);
+
+        self::$ticket = $result['ticket'];
+    }
+
+    private static function create_curl($is_test) {
+        if (!self::$ch) {
+            self::$url = $is_test ? 'https://api-dev.huoban.com' : 'https://api.huoban.com';
+
+            self::$headers = array(
+                'Accept' => 'application/json',
+            );
+
+            self::$ch = curl_init();
+            curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt(self::$ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt(self::$ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt(self::$ch, CURLOPT_HEADER, true);
+            curl_setopt(self::$ch, CURLINFO_HEADER_OUT, true);
+        }
     }
 
     public static function request($method, $url, $attributes = array(), $options = array()) {
@@ -94,6 +119,8 @@ class Huoban {
 
         if (self::$ticket) {
             self::$headers['X-Huoban-Ticket'] = self::$ticket;
+        } elseif (self::$token) {
+            self::$headers['Authorization'] = 'Bearer ' . self::$token;
         }
 
         if (isset($options['headers']) && $options['headers']) {
@@ -129,7 +156,7 @@ class Huoban {
 
         $body = json_decode($response_content, true);
         if ($status == 500) {
-            throw new HuobanException($body['message'], $body['code']);
+            throw new HuobanException($body);
         } elseif ($status == 200) {
             return $body;
         } else {

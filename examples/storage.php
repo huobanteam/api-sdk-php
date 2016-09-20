@@ -1,25 +1,44 @@
 <?php
-require_once '../autoload.php';
+
+use Huoban\Lib\HuobanClient;
+use Huoban\Model\HuobanStorage;
+
+require_once __DIR__ . '/Config.php';
 
 // 正常是从url地址获取
 // $ticket = $_GET['ticket'];
 
-$ticket = 'K6sjbj8zooC1ugBP/drf9WQLRA1F0vmmFG6KBCrmmORy3ObYSXZ+rDmoN+qTDy/HLujRvvBnqluIK4yv2hdOYpXccbTZfogJMV2VxB81Jri5LAs2sEL8YorJPfbaLf6iPGRSRraMUKf39huLfqsyq6xEOo5DIVz5e7Lksv0CZTo=';
-$is_test = true;
+HuobanClient::setup_with_ticket(Config::TICKET, Config::IS_TEST);
 
-Huoban::setup($ticket, $is_test);
 
-try {
-    $key = 'task|11001|project';
-    $value = array(
-        'project_id' => 1,
-        'name' => '这是项目1',
-    );
+$key = 'task|11001|project';
+$value = array(
+    'project_id' => 1,
+    'name' => '这是项目1',
+);
 
-    HuobanStorage::set($key, $value);
+setStorage($key, $value);
 
-    $result = HuobanStorage::get($key);
-    print_r($result);
-} catch (Exception $e) {
-    print_r($e);
+getStorage($key);
+
+function setStorage($key, $value) {
+    try {
+        HuobanStorage::set($key, $value);
+    } catch (HuobanExcrption $e) {
+        printf(__FUNCTION__ . ": FAILED\n");
+        printf($e->getMessage() . "\n");
+        return;
+    }
+    print(__FUNCTION__ . ": OK" . "\n");
+}
+
+function getStorage($key) {
+    try {
+        HuobanStorage::get($key);
+    } catch (HuobanExcrption $e) {
+        printf(__FUNCTION__ . ": FAILED\n");
+        printf($e->getMessage() . "\n");
+        return;
+    }
+    print(__FUNCTION__ . ": OK" . "\n");
 }
