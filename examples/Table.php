@@ -3,6 +3,7 @@
 use Huoban\Lib\HuobanClient;
 use Huoban\Model\HuobanTable;
 use Huoban\Lib\HuobanException;
+use Huoban\Model\HuobanTicket;
 
 require_once __DIR__ . '/Config.php';
 try {
@@ -12,7 +13,7 @@ try {
     $app_id = 8;
     HuobanClient::setup_with_app_id($app_id, Config::APPLICATION_ID, Config::APPLICATION_SECRET, Config::IS_TEST);
 
-    $table_id = 24;
+    $table_id = HuobanTicket::get_table_id();
     getTable($table_id);
 } catch (HuobanException $e) {
     printf($e->getMessage() . "\n");

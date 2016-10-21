@@ -22,6 +22,17 @@ class HuobanTable {
     }
 
     /**
+     * get_for_space
+     *
+     * @param  integer $space_id
+     * @param  array  $options
+     * @return array
+     */
+    public static function get_for_space($space_id, $attributes = array(), $options = array()) {
+        return HuobanClient::get("/tables/space/{$space_id}", $attributes, $options);
+    }
+
+    /**
      * get_alias_fields
      *
      * @param  array $table

@@ -35,6 +35,18 @@ class HuobanItem {
         return HuobanClient::delete("/item/{$item_id}", $attributes);
     }
 
+    public static function bulk_create($table_id, $attributes = array(), $options = array()) {
+        return HuobanClient::post("/item/table/{$table_id}/create", $attributes, $options);
+    }
+
+    public static function bulk_update($table_id, $attributes = array(), $options = array()) {
+        return HuobanClient::post("/item/table/{$table_id}/update", $attributes, $options);
+    }
+
+    public static function bulk_delete($table_id, $attributes = array()) {
+        return HuobanClient::post("/item/table/{$table_id}/delete", $attributes);
+    }
+
     public static function find($table_id, $attributes = array(), $options = array()) {
         return HuobanClient::post("/item/table/{$table_id}/find", $attributes, $options);
     }
