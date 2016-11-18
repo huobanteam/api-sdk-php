@@ -2,22 +2,41 @@
 
 use Huoban\Lib\HuobanClient;
 use Huoban\Model\HuobanItem;
+use Huoban\Model\HuobanTable;
 use Huoban\Lib\HuobanException;
 
 require_once __DIR__ . '/Config.php';
-// 正常是从url地址获取
-// $app_id = $_GET['app_id'];
 
 try {
 
-    $app_id = 8;
-    HuobanClient::setup_with_token($app_id, Config::TOKEN, Config::IS_TEST);
+    Config::set_up();
 
-    $table_id = 24;
+    if ($_GET['table_id']) {
+        $table_id = $_GET['table_id'];
+    } else {
+        $table_id = HuobanTicket::get_table_id();
+    }
+
+    $table = HuobanTable::get($table_id);
+    $fields = $table['fields'];
+    $data_fields = array();
+    foreach ($fields as $field) {
+        $type = $field['type'];
+        $field_id = $field['field_id'];
+        switch ($type) {
+            case 'text':
+                $data_fields[$field_id] = "测试";
+                break;
+            case 'number':
+                $data_fields[$field_id] = 123;
+                break;
+            default:
+                break;
+        }
+    }
+
     $data = array(
-        'fields' => array(
-            '23' => '这是标题',
-        ),
+        'fields' => $data_fields
     );
 
     // 创建item

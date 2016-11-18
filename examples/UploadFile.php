@@ -9,7 +9,7 @@ try {
     // 正常是从url地址获取
     // $ticket = $_GET['ticket'];
 
-    HuobanClient::setup_with_ticket(Config::TICKET, Config::IS_TEST);
+    Config::set_up();
 
     $file_path = dirname(__FILE__) . '/pic/aaa.png';
 

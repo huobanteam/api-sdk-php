@@ -7,13 +7,15 @@ use Huoban\Model\HuobanTicket;
 
 require_once __DIR__ . '/Config.php';
 try {
-    // 正常是从url地址获取
-    // $app_id = $_GET['app_id'];
 
-    $app_id = 8;
-    HuobanClient::setup_with_app_id($app_id, Config::APPLICATION_ID, Config::APPLICATION_SECRET, Config::IS_TEST);
+    Config::set_up();
 
-    $table_id = HuobanTicket::get_table_id();
+    if ($_GET['table_id']) {
+        $table_id = $_GET['table_id'];
+    } else {
+        $table_id = HuobanTicket::get_table_id();
+    }
+
     getTable($table_id);
 } catch (HuobanException $e) {
     printf($e->getMessage() . "\n");

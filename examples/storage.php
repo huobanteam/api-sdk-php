@@ -6,12 +6,9 @@ use Huoban\Lib\HuobanException;
 
 require_once __DIR__ . '/Config.php';
 
-try {
-    // 正常是从url地址获取
-    // $ticket = $_GET['ticket'];
+try {;
 
-    HuobanClient::setup_with_ticket(Config::TICKET, Config::IS_TEST);
-
+    Config::set_up();
 
     $key = 'task|11001|project';
     $value = array(
