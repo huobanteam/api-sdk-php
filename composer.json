@@ -1,19 +1,22 @@
 {
-    "name": "huoban/api-sdk-php",
-    "description": "Huoban api SDK for PHP",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Huoban",
-            "homepage": "http://www.huoban.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "php":">=5.3"
-    },
-    "autoload": {
-        "psr-4": {"Huoban\\": "src/Huoban"}
+  "name": "huoban/api-sdk-php",
+  "description": "Huoban api SDK for PHP",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Huoban",
+      "homepage": "http://www.huoban.com"
     }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "guzzlehttp/guzzle": "^7.3.0",
+    "php":">=7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Huoban\\": "src/Huoban"
+    }
+  }
 }

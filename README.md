@@ -6,8 +6,7 @@ Huoban api sdk for PHP是伙伴云表格为第三方开发者提供的php sdk包
 
 
 ## 运行环境
-- PHP 5.3+
-- cURL extension
+- PHP 7.2+
 
 ## 安装方法
 
@@ -35,54 +34,51 @@ Huoban api sdk for PHP是伙伴云表格为第三方开发者提供的php sdk包
 
 | 类名 | 解释 |
 |:------------------|:------------------------------------|
-|Huoban\Lib\HuobanClient | Huoban客户端类，用户通过HuobanClient的实例实现调用初始化 |
-|Huoban\Lib\HuobanException | Huoban异常类，用户在使用的过程中，只需要注意这个异常|
+|Huoban\Huoban | Huoban工场类，用户通过Huoban工场创建相应操作实例 |
 
-### HuobanClient初始化
+### 可创建的实例
 
-SDK的操作通过初始化HuobanClient类，然后通过Model里面不同方法进行调用，下面代码初始化一个HuobanClient对象:
+| 类名 | 解释 |
+|:------------------|:------------------------------------|
+|table | 操作表格类，对应 Huoban\\Models\\HuobanTable |
+|bi | bi数据仓库类，对应 Huoban\\Models\\HuobanBi |
+|bitable | bi数据仓库表表格类，对应 Huoban\\Models\\HuobanBiTable |
+|comment | 操作评论类，对应 Huoban\\Models\\HuobanComment |
+|company | 公司信息类，对应 Huoban\\Models\\HuobanCompany |
+|file | 文件操作类，对应 Huoban\\Models\\HuobanFile |
+|item | 表格数据类，对应 Huoban\\Models\\HuobanItem |
+|members | 用户类，对应 Huoban\\Models\\HuobanMembers |
+|order | 订单类，对应 Huoban\\Models\\HuobanOrder |
+|share | 分享类，对应 Huoban\\Models\\HuobanShare |
+
+### Huoban初始化
+
+SDK的操作通过初始化Huoban类，然后通过Model里面不同方法进行调用，下面代码初始化一个Huoban对象:
 
 ```php
-<?php
-$application_id = "<您从Huoban获得的应用ID>"; ;
-$application_secret = "<您从Huoban获得的应用秘钥>";
-$token = "<您从Huoban获得的token>";
-$ticket = "<您从Huoban获得的ticket>";
-$app_id = "<您从安装应用中获得的app_id>";
+$config = [
+    'ticket' => 'xxxx',
+    'application_id' => 'xxxx',
+    'application_secret' => 'xxxxx',
+];
 ```
-获得不同的信息可以采用不同方法进行初始化
+获得不同的信息可以采用不同方法进行初始化，下面为表格应用
+```php
+$huoban = new Huoban([
+   'ticket' => 'xxxx'
+]);
+$table = $huoban->create('table'); 
+
+$table->get('table_id');
 ```
-try {
-    HuobanClient::setup_with_app_id($app_id, $application_id, $application_secret);
-} catch (HuobanException $e) {
-    print $e->getMessage();
-}
-```
-或
-```
-try {
-    HuobanClient::setup_with_token($app_id, $token);
-} catch (HuobanException $e) {
-    print $e->getMessage();
-}
-```
-或
-```
-try {
-    HuobanClient::setup_with_ticket($ticket);
-} catch (HuobanException $e) {
-    print $e->getMessage();
-}
+或工作区应用
+```php
+$huoban = new Huoban([
+   'application_id' => 'xxxx',
+   'application_secret' => 'xxxx'
+]);
+$table = $huoban->create('table');
+
+$table->get('table_id');
 ```
 
-### 返回结果处理
-
-HuobanClient提供的接口返回返回数据分为两种：
-
-* Delete类接口，接口返回null，如果没有HuobanException，即可认为操作成功
-* Put，Get，Post类接口，接口返回对应的数据，如果没有HuobanException，即可认为操作成功。
-
-### 运行examples程序
-
-1. 修改 `examples/Config.php`， 补充配置信息
-2. 执行 `cd examples/ && php [文件名]`
