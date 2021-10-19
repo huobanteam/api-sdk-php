@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
+use Huoban\Models\HuobanTicket;
 
 class GuzzleRequest implements RequestInterface
 {
@@ -25,22 +26,19 @@ class GuzzleRequest implements RequestInterface
      *
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
-        $this->config = $config + [
-                'name'               => 'huoban_sass',
-                'alias_model'        => true,
-                'app_type'           => 'enterprise',
-                'space_id'           => '',
-                'application_id'     => '',
-                'application_secret' => '',
-                'urls' => [
-                    'api' => 'https://api.huoban.com',
-                    'upload' => 'https://upload.huoban.com',
-                    'bi' => 'https://bi.huoban.com',
-                ],
-            ];
+        $this->config = $config;
     }
+
+    public function setConfig($key, $val) {
+        $this->config[$key] = $val;
+    }
+
+    public function getConfig($key, $val = '') {
+        return $this->config[$key] ?? $val;
+    }
+
     /**
      * 执行具体操作
      *
@@ -91,9 +89,7 @@ class GuzzleRequest implements RequestInterface
             $default_headers['X-Huoban-Return-Alias-Space-Id'] = $this->config['space_id'];
         }
 
-        if ('user' == $this->config['app_type']) {
-            $default_headers['authorization'] = $this->config['token'];
-        } else {
+        if(isset($this->config['ticket'])) {
             $default_headers['X-Huoban-Ticket'] = $this->config['ticket'];
         }
 

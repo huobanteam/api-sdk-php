@@ -17,7 +17,7 @@ Huoban api sdk for PHP是伙伴云表格为第三方开发者提供的php sdk包
    或者在你的`composer.json`中声明对Huoban api SDK for PHP的依赖：
 
         "require": {
-            "huoban/api-sdk-php": "~1.0"
+            "huoban/api-sdk-php": "^2.0"
         }
 
    然后通过`composer install`安装依赖。composer安装完成后，在您的PHP代码中引入依赖即可：

@@ -7,6 +7,13 @@
 
 namespace Huoban;
 
+use Exception;
+use Huoban\Models\HuobanTicket;
+use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
+
 class Huoban implements Factory
 {
 
@@ -14,9 +21,24 @@ class Huoban implements Factory
 
     protected $config;
 
-    public function __construct($config = [])
+    protected $cache;
+
+    public function __construct($config = [], CacheInterface $cache = null)
     {
-        $this->config = $config;
+        $this->config = $config + [
+            'name'               => 'huoban',
+            'alias_model'        => true,
+            'app_type'           => 'enterprise',
+            'space_id'           => '',
+            'application_id'     => '',
+            'application_secret' => '',
+            'urls' => [
+                'api' => 'https://api.huoban.com',
+                'upload' => 'https://upload.huoban.com',
+                'bi' => 'https://bi.huoban.com',
+            ],
+        ];
+        $this->cache = $cache;
     }
 
     public function create($model)
@@ -24,9 +46,33 @@ class Huoban implements Factory
         return $this->models[$model] = $this->resolve($model);
     }
 
-    protected function resolve($model) {
-        $model = '\\Huoban\\Models\\Huoban'.ucfirst($model);
+    /**
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
+    protected function resolve($model)
+    {
+        $model = '\\Huoban\\Models\\Huoban' . ucfirst($model);
 
-        return new $model(new GuzzleRequest($this->config));
+        $request = new GuzzleRequest($this->config);
+
+        if (isset($this->config['application_id']) && isset($this->config['application_secret'])) {
+
+            if(is_null($this->cache)) {
+                $cache = new FilesystemAdapter();
+
+                $cache = new Psr16Cache($cache);
+                $this->cache = $cache;
+            }
+
+            HuobanTicket::setCache($this->cache);
+
+            $ticket = new HuobanTicket($request);
+            $ticket = $ticket->getTicket($this->config);
+
+            $request->setConfig('ticket', $ticket);
+        }
+
+        return new $model($request);
     }
 }

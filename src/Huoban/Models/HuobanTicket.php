@@ -11,14 +11,28 @@
 
 namespace Huoban\Models;
 
+use Exception;
 use GuzzleHttp\Psr7\Request;
+use Huoban\RequestInterface;
+use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class HuobanTicket
 {
     public $request;
-    public function __construct($huoban)
+
+    protected static $cache;
+
+    /**
+     * @throws \Exception
+     */
+    public function __construct(RequestInterface $request)
     {
         $this->request = $request;
+    }
+
+    public static function setCache(CacheInterface $cache) {
+        self::$cache = $cache;
     }
 
     /**
@@ -27,36 +41,38 @@ class HuobanTicket
      * @param [type] $application_id
      * @param [type] $application_secret
      * @param [type] $expired
-     * @return void
+     * @return Request
      */
-    public function getForEnterpriseRequest($application_id, $application_secret, $expired)
+    public function getForEnterpriseRequest($application_id, $application_secret, $expired): Request
     {
         $attr = [
             'application_id'     => $application_id,
             'application_secret' => $application_secret,
             'expired'            => $expired,
         ];
+
         return new Request('POST', '/v2/ticket', [], json_encode($attr));
     }
+
     /**
      * 获取企业授权的执行操作
      *
-     * @param [type] $application_id
-     * @param [type] $application_secret
+     * @param $application_id
+     * @param $application_secret
      * @param array $options
-     * @return void
+     * @return string
+     * @throws Exception
      */
-    public function getForEnterprise($application_id, $application_secret, $options = [])
+    public function getForEnterprise($application_id, $application_secret, array $options = []): string
     {
         $ticket_name = $this->request->config['name'] . '_enterprise_ticket';
         $expired     = $options['expired'] ?? 1209600;
 
-        $ticket = $this->request->_cache->remember($ticket_name, $expired - 3600, function () use ($application_id, $application_secret, $expired) {
+        return $this->remember($ticket_name, $expired - 3600, function () use ($application_id, $application_secret, $expired) {
             $request  = $this->getForEnterpriseRequest($application_id, $application_secret, $expired);
             $response = $this->request->requestJsonSync($request);
             return $response['ticket'];
         });
-        return $ticket;
     }
 
     /**
@@ -65,9 +81,9 @@ class HuobanTicket
      * @param [type] $share_id
      * @param [type] $secret
      * @param [type] $expired
-     * @return void
+     * @return Request
      */
-    public function getForShareRequest($share_id, $secret, $expired)
+    protected function getForShareRequest($share_id, $secret, $expired): Request
     {
         $attr = [
             'share_id' => $share_id,
@@ -76,60 +92,61 @@ class HuobanTicket
         ];
         return new Request('POST', '/v2/ticket', [], json_encode($attr));
     }
+
     /**
-     * 获取分享授权的执行操作
-     *
-     * @param [type] $share_id
-     * @param [type] $secret
-     * @param [type] $options
-     * @return void
+     * @throws Exception
      */
-    public function getForShare($share_id, $secret, $options)
+    protected function getForShare($share_id, $secret, $options)
     {
         $ticket_name = $this->request->config['name'] . '_share_ticket';
         $expired     = $options['expired'] ?? 1209600;
 
-        $ticket = $this->request->catch->remember($ticket_name, $expired - 3600, function () use ($share_id, $secret, $expired) {
+        return $this->remember($ticket_name, $expired - 3600, function () use ($share_id, $secret, $expired) {
             $request  = $this->getForShareRequest($share_id, $secret, $expired);
             $response = $this->request->requestJsonSync($request);
             return $response['ticket'];
         });
-
-        return $ticket;
     }
 
     /**
-     * 获取表格授权
-     *
-     * @return void
+     * @throws InvalidArgumentException
      */
-    public function getForTable()
-    {
-        return $_GET['ticket'];
-    }
-
     public function getTicket($config, $options = [])
     {
-        $app_type = $config['app_type'] ?? 'table';
+        $type = $config['app_type'];
 
-        switch ($app_type) {
-            case 'table':
-                $ticket = $this->getForTable();
-                break;
+        switch ($type) {
             case 'enterprise':
-                $ticket = $this->getForEnterprise($config['application_id'], $config['application_secret'], $options);
-                break;
+                return $this->getForEnterprise($config['application_id'], $config['application_secret'], $options);
             case 'share':
-                $ticket = $this->getForShare($config['share_id'], $config['secret'], $options);
-                break;
+                return $this->getForShare($config['share_id'], $config['secret'], $options);
             default:
-                break;
+                return '';
         }
-        return $ticket;
     }
 
     public function parse($body = [], $options = [])
     {
         return $this->request->execute('GET', "/ticket/parse", $body, $options);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function remember($name, $expired, $callback) {
+
+        if(!self::$cache) {
+            throw new Exception('not cache params');
+        }
+
+        $name = $name.'_'.$this->request->getConfig('application_id');
+
+        $ticket = self::$cache->get($name, false);
+
+        if(!$ticket) {
+            self::$cache->set($name, $ticket = $callback(), $expired);
+        }
+
+        return $ticket;
     }
 }
