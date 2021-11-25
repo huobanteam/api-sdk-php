@@ -28,10 +28,7 @@ class Huoban implements Factory
         $this->config = $config + [
             'name'               => 'huoban',
             'alias_model'        => true,
-            'app_type'           => 'enterprise',
             'space_id'           => '',
-            'application_id'     => '',
-            'application_secret' => '',
             'urls' => [
                 'api' => 'https://api.huoban.com',
                 'upload' => 'https://upload.huoban.com',
