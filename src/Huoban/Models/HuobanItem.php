@@ -209,7 +209,7 @@ class HuobanItem
                             $sources[] = $value['link']['source'];
                             $mediums[] = $value['link']['medium'];
                         }
-                        $format_item[$field_key]                 = implode(';', $sources);
+                        $format_item[$field_key]                 = implode(';', $mediums);
                         $format_item[$field_key . '_linksource'] = $sources;
                         $format_item[$field_key . '_linkmedium'] = $mediums;
 
