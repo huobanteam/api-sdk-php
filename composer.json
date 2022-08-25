@@ -13,7 +13,7 @@
   "require": {
     "psr/simple-cache": "^3.0.0",
     "guzzlehttp/guzzle": "^7.3.0",
-    "symfony/cache": "^5.3",
+    "symfony/cache": "^6.1",
     "php":">=7.2"
   },
   "autoload": {
